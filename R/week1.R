@@ -1,15 +1,17 @@
-
 # 載入必要的套件
 library(tidyverse)
 
 # 讀取CSV檔案
 data <- read_csv("https://raw.githubusercontent.com/econmtlin/113-2-data-visualization-demo/main/data/%E6%AD%B7%E5%B9%B4%E4%B8%AD%E8%8F%AF%E6%B0%91%E5%9C%8B%E5%9C%8B%E6%B0%91%E5%87%BA%E5%9C%8B%E7%9B%AE%E7%9A%84%E5%9C%B0%E4%BA%BA%E6%95%B8%E7%B5%B1%E8%A8%882002-2024.csv")
 
+# 將所有年份的數據轉換為數字型
+data <- data %>%
+  mutate(across(`2002`:`2024`, ~as.numeric(gsub(",", "", .))))
+
 # 清理資料，將合計值的列取出
 totals <- data %>%
   filter(str_detect(首站抵達地, "合計 Total|Grand Total")) %>%
-  pivot_longer(cols = -c(首站抵達地, 細分), names_to = "year", values_to = "count") %>%
-  mutate(count = as.numeric(gsub(",", "", count)))
+  pivot_longer(cols = -c(首站抵達地, 細分), names_to = "year", values_to = "count")
 
 # 計算各地區合計值的平均值
 averages <- totals %>%
